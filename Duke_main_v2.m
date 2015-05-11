@@ -154,6 +154,9 @@ numRealidades = numRealidades_total;
 % Limpa memória
 % clearvars -except Pasta_Saida vetor_dataNumerica yout numRealidades mesesSimulacao fatorSaida gera_Graficos_Excel Pasta_mat nomeCenario
 
+if ~exist(Pasta_Resultados,'dir')
+    mkdir(Pasta_Resultados);
+end
 save([Pasta_Resultados '\' nomeCenario{1,1}],'vetor_dataNumerica', 'yout', 'numRealidades', 'mesesSimulacao', 'fatorSaida');
 
 gera_Saidas
