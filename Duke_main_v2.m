@@ -16,7 +16,7 @@ nomeCenario = {'cenario_teste2_13a'};
 % Planilha de entrada
 % [source_filepath , source_filename] = uigetfile({'*.xlsm;*.xlsx;*.xls' , 'EXCEL (*xlsm,*.xlsx,*.xls)'}, 'Abrir Planilha de Parametros');
 source_filename = pwd;
-source_filepath = '\Parametros_entrada_v3.xlsx';
+source_filepath = '\Parametros_entrada_v4.xlsx';
 
 % Contratos
 % Pasta_Contratos = uigetdir(pwd,'Selecionar pasta de contratos');
@@ -117,7 +117,14 @@ for simulacao = 1:numSimulacoes
     JSCP_RetidoInicial = 0; % Input?
     PeriodoJSCP = 12;
     PeriodoIR_diferido = 12;
-      
+    
+    % Cálculo da Garantia Física Sazonalizada
+    vetor_horasMes = 24*vetor_diasMes';
+    vetorSpot_MWm = volumeSPOT./vetor_horasMes;
+    
+    energiaAlocada_MWm = vetorSpot_MWm + energiaContratada_Total(:,2);
+    GF_sazonalizada = [(1:mesesSimulacao)' energiaAlocada_MWm./GSF(:,2)];
+    
     % gera o Input.mat para o modelo
     gera_Input_modelo
     
@@ -161,3 +168,4 @@ save([Pasta_Resultados '\' nomeCenario{1,1}],'vetor_dataNumerica', 'yout', 'numR
 
 gera_Saidas
 toc
+

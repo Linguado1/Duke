@@ -83,11 +83,18 @@ linha = linha + 1;
 refInd=(1-TEIFref)*(1-TEIPref);
 
 % PIS e COFINS sobre compras Spot e MRE
-PIS = dadosNumeroConstantes(linha);
+PIS_cum = dadosNumeroConstantes(linha);
 linha = linha + 1;
-COFINS = dadosNumeroConstantes(linha);
+COFINS_cum = dadosNumeroConstantes(linha);
 linha = linha + 1;
-PIS_COFINS_Cumulativo = PIS + COFINS;
+PIS_COFINS_Cumulativo = PIS_cum + COFINS_cum;
+
+% PIS e COFINS sobre Receita de cContratos
+PIS_Naocum = dadosNumeroConstantes(linha);
+linha = linha + 1;
+COFINS_Naocum = dadosNumeroConstantes(linha);
+linha = linha + 1;
+PIS_COFINS_Nao_Cumulativo = PIS_Naocum + COFINS_Naocum;
 
 deducaoP_D = dadosNumeroConstantes(linha);% 1% da Receita Líquida
 linha = linha + 1;

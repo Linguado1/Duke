@@ -5,10 +5,10 @@ function [energiaContratada, energiaContratada_Total, receitaContratada, receita
     dataFinSimN = addtodate(dataInSimN, mesesSimulacao, 'month');
         
     numCenarios = size(vetorContratos{1}.index, 1);
-    numMesesSim = mesesSimulacao+1;
+    numMesesSim = mesesSimulacao;
     numContratos = length(vetorContratos);
     
-    datasSim = datenum([repmat('01/',numMesesSim,1) num2str(month(dataInSimN)+(0:mesesSimulacao)') repmat(['/' num2str(year(dataInSimN))],numMesesSim,1)],'dd/mm/yyyy');
+    datasSim = datenum([repmat('01/',numMesesSim,1) num2str(month(dataInSimN)+(0:mesesSimulacao-1)') repmat(['/' num2str(year(dataInSimN))],numMesesSim,1)],'dd/mm/yyyy');
 
     
 %% Energia, Valor e Impostos
@@ -28,7 +28,7 @@ function [energiaContratada, energiaContratada_Total, receitaContratada, receita
         datasContrato = datenum([repmat('01/',duracaoContrato,1) num2str(month(vetorContratos{i}.dataInicio)+(0:duracaoContrato-1)') repmat(['/' num2str(year(vetorContratos{i}.dataInicio))],duracaoContrato,1)],'dd/mm/yyyy');
         
         filtro1 = datasContrato >= dataInSimN;
-        filtro2 = datasContrato <= dataFinSimN;
+        filtro2 = datasContrato < dataFinSimN;
         filtroContratos = filtro1 & filtro2;
         
         datasFiltradas = datasContrato(filtroContratos);
@@ -36,6 +36,9 @@ function [energiaContratada, energiaContratada_Total, receitaContratada, receita
         if ~isempty(datasFiltradas)
             duracaoFiltrada = months(datasFiltradas(1),datasFiltradas(end))+1;
 
+%             if i==63
+%                 disp('oi')
+%             end
             indexDataInicio = find(datasSim==datasFiltradas(1));
 
             energiaContratada(indexDataInicio:indexDataInicio+duracaoFiltrada-1,i) = vetorContratos{i}.energiaContratada(filtroContratos,:);

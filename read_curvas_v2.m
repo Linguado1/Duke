@@ -34,13 +34,14 @@ if simulacao == 1
         coluna = coluna +1;
         coluna = coluna +1;
         
-        PLD_entrada(k,1) = Curvas_Entrada{k,coluna};
+        PLD_compra_entrada(k,1) = Curvas_Entrada{k,coluna};
         coluna = coluna +1;
+        PLD_venda_entrada(k,1) = Curvas_Entrada{k,coluna};
+        coluna = coluna +1;
+        
+        PLD_entrada = PLD_venda_entrada - PLD_compra_entrada;
         
         GSF_entrada(k,1) = Curvas_Entrada{k,coluna};
-        coluna = coluna +1;
-        
-        GF_sazonalizada_entrada(k,1) = Curvas_Entrada{k,coluna};
         coluna = coluna +1;
         coluna = coluna +1;
         
@@ -61,9 +62,21 @@ if simulacao == 1
         coluna = coluna +1;
         coluna = coluna +1;
         
+        compraSPOT_entrada(k,1) = Curvas_Entrada{k,coluna};
+        coluna = coluna +1;
+        vendaSPOT_entrada(k,1) = Curvas_Entrada{k,coluna};
+        coluna = coluna +1;
+        coluna = coluna +1;
+        
+        volumeSPOT_entrada = vendaSPOT_entrada - compraSPOT_entrada;
+        
         compraMRE_entrada(k,1) = Curvas_Entrada{k,coluna};
         coluna = coluna +1;
         vendaMRE_entrada(k,1) = Curvas_Entrada{k,coluna};
+        coluna = coluna +1;
+        coluna = coluna +1;
+        
+        otherOperatingRevenues_entrada(k,1) = Curvas_Entrada{k,coluna};
         coluna = coluna +1;
         coluna = coluna +1;
         
@@ -174,7 +187,7 @@ else
     [ PLD, GSF ] = Gera_PLD_GSF( Dados_mes, realidadesPorSimulacao, DataInicial, mesesSimulacao, 'Insample' );
 end
     
-GF_sazonalizada = [(1:mesesSimulacao)' [GF_sazonalizada_entrada(indexInicio:indexFim);zeros(tempoSimulacao-size(GF_sazonalizada_entrada,1),1)]];
+% GF_sazonalizada = [(1:mesesSimulacao)' [GF_sazonalizada_entrada(indexInicio:indexFim);zeros(tempoSimulacao-size(GF_sazonalizada_entrada,1),1)]];
 
 taxa_paga_dividendos = [(1:mesesSimulacao)' taxa_paga_dividendos_entrada(indexInicio:indexFim)];
 
@@ -191,8 +204,12 @@ CurvaReajuste = [(1:mesesSimulacao)' cumprod(repmat((1+reajusteSalario)^(1/12),m
 
 CapitalSocial = [(0:mesesSimulacao)' CapitalSocial_entrada((indexInicio-1):indexFim)]; % Considera o Capital Social do mês anterior ao inicio como Capital Social Inicial
 
+volumeSPOT = volumeSPOT_entrada(indexInicio:indexFim);
+
 compraMRE = [(1:mesesSimulacao)' compraMRE_entrada(indexInicio:indexFim)];
 vendaMRE = [(1:mesesSimulacao)' vendaMRE_entrada(indexInicio:indexFim)];
+
+otherOperatingRevenues = [(1:mesesSimulacao)' otherOperatingRevenues_entrada(indexInicio:indexFim)];
 
 regulatoryFees = [(1:mesesSimulacao)' regulatoryFees_entrada(indexInicio:indexFim)];
 

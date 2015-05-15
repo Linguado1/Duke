@@ -93,13 +93,13 @@ Input.signals(20).dimensions = 1;
 Input.signals(24).values = [taxa_paga_dividendos(1,2:end); taxa_paga_dividendos(:,2:end);zeros(tempoSimulacao-size(taxa_paga_dividendos,1),1)];
 Input.signals(24).dimensions = 1;
 
-Input.signals(03).values = [0;energiaContratada_Total(2:end,2:end)];
+Input.signals(03).values = [0;energiaContratada_Total(:,2:end)]; %%%%% 2:end?
 Input.signals(03).dimensions = 1;
 
-Input.signals(04).values = [zeros(1,realidadesPorSimulacao);receitaContratada_Total(2:end,2:end)];
+Input.signals(04).values = [zeros(1,realidadesPorSimulacao);receitaContratada_Total(:,2:end)]; %%%%% 2:end?
 Input.signals(04).dimensions = realidadesPorSimulacao;
 
-Input.signals(05).values = [zeros(1,realidadesPorSimulacao);PIS_COFINS_ICMS_Contratos_Total(2:end,2:end)];
+Input.signals(05).values = [zeros(1,realidadesPorSimulacao);PIS_COFINS_ICMS_Contratos_Total(:,2:end)]; %%%%% 2:end?
 Input.signals(05).dimensions = realidadesPorSimulacao;
 
 Input.signals(06).values = MtM_Total_Dividas(:,2:end);
@@ -135,6 +135,9 @@ Input.signals(32).dimensions = 1;
 
 Input.signals(33).values = [0;vendaMRE(:,2:end);zeros(tempoSimulacao-size(vendaMRE,1),1)];
 Input.signals(33).dimensions = 1;
+
+Input.signals(55).values = [0;otherOperatingRevenues(:,2:end);zeros(tempoSimulacao-size(otherOperatingRevenues,1),1)];
+Input.signals(55).dimensions = 1;
 
 Input.signals(34).values = [0;regulatoryFees(:,2:end);zeros(tempoSimulacao-size(regulatoryFees,1),1)];
 Input.signals(34).dimensions = 1;
@@ -257,8 +260,8 @@ vetor_JSCP_APagarInicial = [repmat(vetor_JSCP_APagarInicial,numRealidades,1); ze
 % Após gerados os parametros necessários, estruturar corretamente e rodar
 % sempre apenas a seção abaixo (Modifica parametros de entrada do .exe).
 
-% param_struct = rsimgetrtp('Duke_Simulink_13a','AddTunableParamInfo','on');
-% save('param_struct.mat','param_struct');
+param_struct = rsimgetrtp('Duke_Simulink_13a','AddTunableParamInfo','on');
+save('param_struct.mat','param_struct');
 
 %% Modifica parametros de entrada do .exe
 

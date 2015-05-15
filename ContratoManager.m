@@ -9,7 +9,8 @@ classdef ContratoManager < handle
         index % Vetor com a curva do indexador de inflação
         energiaContratada % Vetor da quantidade de MWmedio contratado mês a mês
         valorMWh % Vetor de preços do MWh mês a mês
-        Imposto % Valor conjunto de impostos a ser pagos
+        ICMS % Taxa de imposto ICMS
+        PIS_COFINS % Taxa de imposto PIS + COFINS
 %         PIS % Taxa de imposto PIS
 %         COFINS % Taxa de imposto COFINS
 %         ICMS % Taxa de imposto ICMS
@@ -18,6 +19,9 @@ classdef ContratoManager < handle
         dataBase % Data base de inflação
         mesAtualizacaoInflacao % Mes de atualizacao da inflacao
         numCenarios % Número de cenários
+        agreement_type % tipo de contrato (Conventional, Swing...)
+        ipca % Proporção da inflação indexada em ipca
+        igpm % Proporção da inflação indexada em igpm
         
         % Auxiliar
         
@@ -51,7 +55,12 @@ classdef ContratoManager < handle
             
             diaAtual=this.datas(this.iMes);
             
-            this.valorAtualizadoMWh(:,this.iMes) = this.valorMWh(this.iMes) * this.indexAplicado(:,this.iMes);
+            if ~strcmp(this.agreement_type,'Swing')
+                this.valorAtualizadoMWh(:,this.iMes) = this.valorMWh(this.iMes) * this.indexAplicado(:,this.iMes)/(1 - this.ICMS);
+            else
+                this.valorAtualizadoMWh(:,this.iMes) = this.valorMWh(this.iMes)/(1 - this.ICMS);
+            end
+                
             
             this.diasDoMes(this.iMes) = eomday(year(diaAtual),month(diaAtual));
             
@@ -59,7 +68,7 @@ classdef ContratoManager < handle
             
             this.Receita(:,this.iMes) = this.energiaMensal(this.iMes)*this.valorAtualizadoMWh(:,this.iMes);
             
-            this.ImpostoPago(:,this.iMes) = this.Receita(:,this.iMes)*this.Imposto;
+            this.ImpostoPago(:,this.iMes) = this.Receita(:,this.iMes)*(this.ICMS + this.PIS_COFINS);
 %             this.pisPago(:,this.iMes) = this.Receita(:,this.iMes)*this.PIS;
 %             this.cofinsPago(:,this.iMes) = this.Receita(:,this.iMes)*this.COFINS;
 %             this.icmsPago(:,this.iMes) = this.Receita(:,this.iMes)*this.ICMS;
@@ -70,12 +79,13 @@ classdef ContratoManager < handle
     
     methods
         
-        function this = ContratoManager(index,energiaContratada,valorMWh,Imposto,dataInicio,dataFinal,dataBase,mesAtualizacaoInflacao,termNumber)
+        function this = ContratoManager(index,energiaContratada,valorMWh,ICMS,PIS_COFINS,dataInicio,dataFinal,dataBase,mesAtualizacaoInflacao,termNumber,agreement_type,ipca,igpm)
             
             this.index=index;
             this.energiaContratada=energiaContratada;
             this.valorMWh=valorMWh;
-            this.Imposto=Imposto;
+            this.ICMS=ICMS;
+            this.PIS_COFINS=PIS_COFINS;
 %             this.PIS=PIS;
 %             this.COFINS=COFINS;
 %             this.ICMS=ICMS;
@@ -85,6 +95,9 @@ classdef ContratoManager < handle
             this.mesAtualizacaoInflacao=mesAtualizacaoInflacao;
             this.numCenarios=size(index,1);
             this.termNumber = termNumber;
+            this.agreement_type = agreement_type;
+            this.ipca = ipca;
+            this.igpm = igpm;
             
         end
         
@@ -100,6 +113,19 @@ classdef ContratoManager < handle
             this.mesesBaseInicio = months(this.dataBase,this.dataInicio);
             
             this.indexAcumulado = [cumprod(1 + this.index,2)];
+            
+%             this.indexAcumulado = zeros(1,length(this.index));
+%             this.indexAcumulado(1) = roundn(1 + this.index(1),-6);
+%             
+%             for i=2:length(this.index)
+%                 this.indexAcumulado(i) = roundn(this.indexAcumulado(i-1)*roundn(1 + this.index(i),-6),-6);
+%             end
+%             this.indexAcumulado(1) = floor((1 + this.index(1))*1000000)/1000000;
+%             
+%             for i=2:length(this.index)
+%                 this.indexAcumulado(i) = floor((this.indexAcumulado(i-1)*floor((1 + this.index(i))*1000000)/1000000)*1000000)/1000000;
+%             end
+
             duracaoInflacao=size(this.indexAcumulado,2)-1;
             
             if this.mesesBaseInicio<1 %% POG para fazer sentido

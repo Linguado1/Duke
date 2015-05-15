@@ -50,8 +50,9 @@ if simulacao == 1
     DadosContratos=cell(size(data1,1)-1,size(data1,2)+size(data2,2)-1);
     DadosContratos(:,1:size(data1,2)) = data1(2:end,:);
     
-    filtroContratoZero = cell2mat(DadosContratos(:,1)) == 0;
-    DadosContratos = DadosContratos(~filtroContratoZero,:);
+    filtroContratoZero = cell2mat(DadosContratos(:,1)) == 0; % | cell2mat(DadosContratos(:,4)) == 0;
+    agreemente_type = DadosContratos(~filtroContratoZero,6);
+    DadosContratos = DadosContratos(~filtroContratoZero,[1:5 7:end]);
     
     [IdContratos,~,index1]=unique(cell2mat(DadosContratos(:,1)));
     Ncontratos=length(IdContratos);
@@ -70,7 +71,7 @@ if simulacao == 1
         thisContrato=IdContratos(k);
         index2=find(cell2mat(data2(2:end,1))==thisContrato)+1;
         tamanhoThisContrato = sum(index1==k);
-        DadosContratos(index1==k,size(data1,2)+1:end) = repmat(data2(index2,2:end),tamanhoThisContrato,1);
+        DadosContratos(index1==k,size(data1,2):end) = repmat(data2(index2,2:end),tamanhoThisContrato,1);
     end
     
     DadosContratos=cell2mat(DadosContratos);
@@ -84,8 +85,11 @@ if simulacao == 1
     
     [~,ordem_data] = sort(DadosContratos(:,2));
     DadosContratos = DadosContratos(ordem_data,:);
+    agreemente_type = agreemente_type(ordem_data,:);
+    
     [~,ordem_contrato] = sort(DadosContratos(:,1));
     DadosContratos = DadosContratos(ordem_contrato,:);
+    agreemente_type = agreemente_type(ordem_contrato,:);
     
     filtroBaseZero = DadosContratos(:,10) == 0;
     filtroAniversarioZero = DadosContratos(:,11) == 0;
@@ -149,6 +153,7 @@ if simulacao == 1
         
         if strcmp(escolha,'Sim')
             DadosContratos = DadosContratos(~filtroContratoErrado,:);
+            agreemente_type = agreemente_type(~filtroContratoErrado,:);
             [IdContratos_tot,~,~]=unique(DadosContratos(:,1));
             Ncontratos_tot=length(IdContratos_tot);
         else
@@ -212,7 +217,7 @@ for k=1:Ncontratos_tot
 
 	index = [IPCA_contrato .* DadosContratos(filtro(1),5) + IGPM_contrato .* DadosContratos(filtro(1),6); zeros((size(DadosContratos,1)-length(IGPM_contrato)),realidadesPorSimulacao)];
        
-	Contratos{k} = ContratoManager(index', DadosContratos(filtro,2), DadosContratos(filtro,3), DadosContratos(filtro(1),4), DadosContratos(filtro(1),7), DadosContratos(filtro(1),8), DadosContratos(filtro(1),9), month(DadosContratos(filtro(1),10)),DadosContratos(filtro(1),1));
+	Contratos{k} = ContratoManager(index', DadosContratos(filtro,2), DadosContratos(filtro,3), DadosContratos(filtro(1),4), PIS_COFINS_Nao_Cumulativo, DadosContratos(filtro(1),7), DadosContratos(filtro(1),8), DadosContratos(filtro(1),9), month(DadosContratos(filtro(1),10)),DadosContratos(filtro(1),1),agreemente_type(filtro),DadosContratos(filtro(1),5),DadosContratos(filtro(1),6));
 	Contratos{k}.generate;
     
     if simulacao == 1
